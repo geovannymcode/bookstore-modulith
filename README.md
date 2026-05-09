@@ -1,4 +1,4 @@
-# Bookstore Starter — Proyecto Inicial
+# Bookstore — Proyecto Inicial
 
 > **Workshop: Monolito Modular Real con Spring Modulith - BarranquillaJUG**
 
@@ -60,7 +60,7 @@ Antes de empezar a refactorizar, lee el código y responde:
 ## Inicio Rápido
 
 ### Prerrequisitos
-- Java 21+
+- Java 25
 - Docker Desktop corriendo
 - Maven 3.9+ (o usar `./mvnw`)
 
@@ -95,7 +95,7 @@ curl -X POST http://localhost:8080/api/orders \
     "productCode": "P001",
     "quantity": 2,
     "customerName": "Geovanny Mendoza",
-    "customerEmail": "geo@jugbaq.com",
+    "customerEmail": "geo@barranquillajug.com",
     "customerPhone": "+57 300 1234567",
     "deliveryAddress": "Calle 72 #45-10, Barranquilla"
   }'
