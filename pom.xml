@@ -24,6 +24,7 @@
 
     <properties>
         <java.version>25</java.version>
+        <spring-modulith.version>2.0.6</spring-modulith.version>
         <testcontainers.version>1.20.5</testcontainers.version>
     </properties>
 
@@ -80,6 +81,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Spring Modulith Core: modularidad y verificación -->
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-starter-core</artifactId>
+        </dependency>
+
+
         <!-- ── Test ───────────────────────────────────────────── -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -106,6 +114,12 @@
             <artifactId>rabbitmq</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Spring Modulith Test: @ApplicationModuleTest, AssertablePublishedEvents -->
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -114,6 +128,13 @@
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
                 <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.modulith</groupId>
+                <artifactId>spring-modulith-bom</artifactId>
+                <version>${spring-modulith.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
