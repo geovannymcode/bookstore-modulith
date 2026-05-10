@@ -1,0 +1,140 @@
+### ============================================================
+### Bookstore Modulith — HTTP Requests
+### Compatible con IntelliJ HTTP Client y VS Code REST Client
+### ============================================================
+
+@host = http://localhost:8080
+
+# ── Catalog: Consultas ────────────────────────────────────────────────
+
+### Obtener todos los productos (paginado)
+GET {{host}}/api/catalog/products?page=1&size=5
+Accept: application/json
+
+###
+
+### Obtener producto por código
+GET {{host}}/api/catalog/products/P001
+Accept: application/json
+
+###
+
+### Obtener producto inexistente (debe retornar 404 con ProblemDetail)
+GET {{host}}/api/catalog/products/FAKE
+Accept: application/json
+
+###
+
+### Productos por categoría
+GET {{host}}/api/catalog/products/category/Arquitectura
+Accept: application/json
+
+###
+
+### Productos mejor calificados (rating >= 4.7)
+GET {{host}}/api/catalog/products/top-rated?minRating=4.7
+Accept: application/json
+
+# ── Catalog: Comandos ─────────────────────────────────────────────────
+
+### Crear producto
+POST {{host}}/api/catalog/products
+Content-Type: application/json
+
+{
+  "code": "P011",
+  "name": "Effective Java",
+  "description": "La biblia de Java moderno por Joshua Bloch.",
+  "imageUrl": null,
+  "price": 48.99,
+  "category": "Lenguajes"
+}
+
+###
+
+### Actualizar producto
+PUT {{host}}/api/catalog/products/P011
+Content-Type: application/json
+
+{
+  "name": "Effective Java (3rd Edition)",
+  "description": "La biblia de Java moderno, edición actualizada.",
+  "imageUrl": "https://example.com/effectivejava.jpg",
+  "price": 52.99,
+  "category": "Lenguajes"
+}
+
+###
+
+### Crear producto duplicado (debe retornar 409 con ProblemDetail)
+POST {{host}}/api/catalog/products
+Content-Type: application/json
+
+{
+  "code": "P001",
+  "name": "Duplicado",
+  "price": 10.00,
+  "category": "Test"
+}
+
+# ── Orders: Crear órdenes ─────────────────────────────────────────────
+
+### Crear orden válida
+# Observar en los logs:
+# 1. OrderService guarda la orden en catalog.orders
+# 2. OrderCreatedEvent se persiste en event_publication (Outbox)
+# 3. InventoryService descuenta el stock (handler asíncrono)
+# 4. El evento se envía a RabbitMQ → exchange "bookstore.orders"
+POST {{host}}/api/orders
+Content-Type: application/json
+
+{
+  "productCode": "P001",
+  "quantity": 2,
+  "customerName": "Geovanny Mendoza",
+  "customerEmail": "geo@jugbaq.com",
+  "customerPhone": "+57 300 1234567",
+  "deliveryAddress": "Calle 72 #45-10, Barranquilla, Colombia"
+}
+
+###
+
+### Crear orden con producto inválido (debe retornar 400)
+POST {{host}}/api/orders
+Content-Type: application/json
+
+{
+  "productCode": "FAKE_PRODUCT",
+  "quantity": 1,
+  "customerName": "Test User",
+  "customerEmail": "test@test.com",
+  "customerPhone": "+57 300 0000000",
+  "deliveryAddress": "Test Address"
+}
+
+# ── Orders: Consultas ─────────────────────────────────────────────────
+
+### Obtener orden por número (reemplaza con el orderNumber del POST anterior)
+GET {{host}}/api/orders/ORD-A1B2C3D4
+Accept: application/json
+
+###
+
+### Órdenes de un cliente
+GET {{host}}/api/orders/customer/geo@jugbaq.com?page=1&size=10
+Accept: application/json
+
+# ── Actuator ──────────────────────────────────────────────────────────
+
+### Health check
+GET {{host}}/actuator/health
+
+###
+
+### Info de módulos (Spring Modulith)
+GET {{host}}/actuator/modulith
+
+###
+
+### Métricas Prometheus
+GET {{host}}/actuator/prometheus

@@ -54,10 +54,10 @@ INSERT INTO orders (order_number, customer_name, customer_email, customer_phone,
                     delivery_address, product_code, product_name, product_price,
                     quantity, status)
 VALUES
-('ORD-A1B2C3D4', 'Geovanny Mendoza', 'geo@jugbaq.com', '+57 300 1234567',
+('ORD-A1B2C3D4', 'Geovanny Mendoza', 'geo@barranquillajug.com', '+57 300 1234567',
  'Calle 72 #45-10, Barranquilla', 'P001', 'Clean Code', 45.99, 2, 'DELIVERED'),
 
-('ORD-E5F6G7H8', 'Laura Pérez', 'laura@dev.co', '+57 311 9876543',
+('ORD-E5F6G7H8', 'Elena Aguirre', 'elena@dev.co', '+57 311 9876543',
  'Carrera 50 #80-20, Barranquilla', 'P003', 'Designing Data-Intensive Applications', 59.99, 1, 'SHIPPED');
 
 -- ── Stock inicial ─────────────────────────────────────────────
