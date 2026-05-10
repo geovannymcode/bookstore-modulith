@@ -2,7 +2,6 @@ package com.geovannycode.bookstore.catalog;
 
 import com.geovannycode.bookstore.catalog.command.ProductCommandService;
 import com.geovannycode.bookstore.catalog.command.ProductEntity;
-import com.geovannycode.bookstore.common.models.PagedResult;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
