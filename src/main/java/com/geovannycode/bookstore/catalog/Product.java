@@ -3,15 +3,14 @@ package com.geovannycode.bookstore.catalog;
 import java.math.BigDecimal;
 
 /**
- * DTO público del módulo catalog.
+ * DTO público del módulo Catalog.
  *
- * Este record es el contrato de catalog con el resto del sistema.
- * Es lo único que otros módulos saben sobre un producto.
- * ProductEntity (con su ID de base de datos, timestamps, etc.)
- * permanece privado dentro de catalog/command/.
+ * Este record es el contrato del módulo con el exterior.
+ * Nunca exponemos ProductEntity ni ProductView directamente —
+ * ese es el acoplamiento que queremos evitar.
  *
- * En la Parte 3, cuando implementemos CQRS, este DTO también
- * incluirá averageRating y reviewCount del read model.
+ * Nótese que tiene averageRating y reviewCount (datos del read model)
+ * sin que quien lo consuma sepa que hay dos tablas detrás.
  */
 public record Product(
         String code,
@@ -19,5 +18,7 @@ public record Product(
         String description,
         String imageUrl,
         BigDecimal price,
-        String category
+        String category,
+        double averageRating,
+        int reviewCount
 ) {}

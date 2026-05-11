@@ -1,7 +1,10 @@
 package com.geovannycode.bookstore.catalog;
 
+import com.geovannycode.bookstore.catalog.command.CreateProductCommand;
 import com.geovannycode.bookstore.catalog.command.ProductCommandService;
-import com.geovannycode.bookstore.catalog.command.ProductEntity;
+import com.geovannycode.bookstore.catalog.command.UpdateProductCommand;
+import com.geovannycode.bookstore.catalog.query.ProductQueryService;
+import com.geovannycode.bookstore.common.models.PagedResult;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,47 +13,48 @@ import java.util.Optional;
 /**
  * API pública del módulo Catalog.
  *
- * Único punto de entrada para que otros módulos interactúen con catalog.
- * Hoy delega a ProductCommandService. En la Parte 3 también delegará
- * a ProductQueryService cuando implementemos CQRS.
- *
- *   orders → CatalogApi.getByCode()     ✅
- *   orders → ProductCommandService      ❌ violación de boundary
- *   orders → ProductRepository          ❌ violación grave
+ * Punto de entrada único para cualquier interacción externa con el catálogo.
+ * Quien usa CatalogApi no necesita saber que hay CQRS detrás:
+ *   - Las escrituras van a ProductCommandService
+ *   - Las lecturas van a ProductQueryService
  */
 @Service
 public class CatalogApi {
 
-    private final ProductCommandService productService;
+    private final ProductCommandService commandService;
+    private final ProductQueryService queryService;
 
-    public CatalogApi(ProductCommandService productService) {
-        this.productService = productService;
+    public CatalogApi(ProductCommandService commandService,
+                      ProductQueryService queryService) {
+        this.commandService = commandService;
+        this.queryService = queryService;
     }
 
+    // ── Comandos (delegados al Command side) ─────────────────────────
+
+    public Product create(CreateProductCommand command) {
+        return commandService.create(command);
+    }
+
+    public Product update(String code, UpdateProductCommand command) {
+        return commandService.update(code, command);
+    }
+
+    // ── Consultas (delegadas al Query side) ──────────────────────────
+
     public Optional<Product> getByCode(String code) {
-        return productService.getByCode(code).map(this::toProduct);
+        return queryService.findByCode(code);
+    }
+
+    public PagedResult<Product> getAll(int page, int size) {
+        return queryService.findAll(page, size);
     }
 
     public List<Product> getByCategory(String category) {
-        return productService.getByCategory(category)
-                .stream()
-                .map(this::toProduct)
-                .toList();
+        return queryService.findByCategory(category);
     }
 
-    /**
-     * Convierte ProductEntity (privado) a Product (público).
-     * Este mapper vive aquí porque es responsabilidad de catalog
-     * decidir qué expone al exterior — no de quien consume el API.
-     */
-    private Product toProduct(ProductEntity entity) {
-        return new Product(
-                entity.getCode(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getImageUrl(),
-                entity.getPrice(),
-                entity.getCategory()
-        );
+    public List<Product> getTopRated(double minRating) {
+        return queryService.findByMinRating(minRating);
     }
 }
