@@ -1,10 +1,10 @@
 package com.geovannycode.bookstore.catalog.command;
 
-import com.geovannycode.bookstore.common.models.PagedResult;
+import com.geovannycode.bookstore.catalog.Product;
+import com.geovannycode.bookstore.catalog.internal.CatalogEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,76 +12,91 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio del catálogo de productos.
+ * Servicio de escritura del módulo Catalog (Command side).
  *
- * ⚠️ PROBLEMAS (para el workshop):
+ * Responsabilidades:
+ * 1. Validar y persistir el cambio en el write model (ProductEntity)
+ * 2. Publicar el evento que sincronizará el read model
  *
- * 1. SIN CQRS: una sola tabla sirve para lectura y escritura.
- *    Las consultas de rating y reviews requerirían JOINs costosos.
- *
- * 2. SIN API PÚBLICA DEFINIDA: cualquier servicio puede inyectar
- *    ProductRepository directamente, como hace OrderService.
- *    No hay un contrato explícito de qué puede hacer el exterior.
- *
- * Objetivo: separar en ProductCommandService (escritura) y
- * ProductQueryService (lectura), con CatalogApi como contrato público.
+ * Nótese que este servicio NO actualiza ProductView directamente.
+ * Eso es responsabilidad del Query side, que reacciona al evento.
  */
 @Service
-@Transactional
 public class ProductCommandService {
 
     private static final Logger log = LoggerFactory.getLogger(ProductCommandService.class);
 
     private final ProductRepository productRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProductCommandService(ProductRepository productRepository) {
+    ProductCommandService(ProductRepository productRepository,
+                          ApplicationEventPublisher eventPublisher) {
         this.productRepository = productRepository;
+        this.eventPublisher = eventPublisher;
     }
 
-    public ProductEntity create(CreateProductRequest request) {
-        if (productRepository.existsByCode(request.code())) {
-            throw new ProductAlreadyExistsException(request.code());
+    @Transactional
+    public Product create(CreateProductCommand cmd) {
+        if (productRepository.existsByCode(cmd.code())) {
+            throw new ProductAlreadyExistsException(cmd.code());
         }
 
         var entity = new ProductEntity(
-                request.code(), request.name(), request.description(),
-                request.imageUrl(), request.price(), request.category()
+                cmd.code(), cmd.name(), cmd.description(),
+                cmd.imageUrl(), cmd.price(), cmd.category()
         );
-
         var saved = productRepository.save(entity);
-        log.info("Producto creado: code={}", saved.getCode());
-        return saved;
+        log.info("Producto creado en write model: code={}", saved.getCode());
+
+        // Publicamos el evento dentro de la transacción.
+        // CatalogEventHandler lo recibirá después del commit y actualizará
+        // product_views en su propia transacción independiente.
+        eventPublisher.publishEvent(new CatalogEvents.ProductCreated(
+                saved.getCode(), saved.getName(), saved.getDescription(),
+                saved.getImageUrl(), saved.getPrice(), saved.getCategory()
+        ));
+
+        return toProduct(saved);
     }
 
-    public ProductEntity update(String code, CreateProductRequest request) {
+    @Transactional
+    public Product update(String code, UpdateProductCommand cmd) {
         var entity = productRepository.findByCode(code)
                 .orElseThrow(() -> new ProductNotFoundException(code));
 
-        entity.setName(request.name());
-        entity.setDescription(request.description());
-        entity.setImageUrl(request.imageUrl());
-        entity.setPrice(request.price());
-        entity.setCategory(request.category());
+        entity.setName(cmd.name());
+        entity.setDescription(cmd.description());
+        entity.setImageUrl(cmd.imageUrl());
+        entity.setPrice(cmd.price());
+        entity.setCategory(cmd.category());
 
-        return productRepository.save(entity);
+        var saved = productRepository.save(entity);
+        log.info("Producto actualizado en write model: code={}", saved.getCode());
+
+        eventPublisher.publishEvent(new CatalogEvents.ProductUpdated(
+                saved.getCode(), saved.getName(), saved.getDescription(),
+                saved.getImageUrl(), saved.getPrice(), saved.getCategory()
+        ));
+
+        return toProduct(saved);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<ProductEntity> getByCode(String code) {
+    public Optional<ProductEntity> findEntityByCode(String code) {
         return productRepository.findByCode(code);
     }
 
-    @Transactional(readOnly = true)
-    public PagedResult<ProductEntity> getAll(int page, int size) {
-        var pageable = PageRequest.of(
-                Math.max(0, page - 1), size,
-                Sort.by("name")
-        );
-        return PagedResult.of(productRepository.findAll(pageable));
+    public List<ProductEntity> findEntitiesByCategory(String category) {
+        return productRepository.findByCategory(category);
     }
 
-    @Transactional(readOnly = true)
-    public List<ProductEntity> getByCategory(String category) {
-        return productRepository.findByCategory(category);
+    private Product toProduct(ProductEntity e) {
+        // En el command side devolvemos rating 0.0 porque el read model
+        // aún no procesó el evento. El cliente debería hacer un GET
+        // para obtener el producto con rating actualizado.
+        return new Product(
+                e.getCode(), e.getName(), e.getDescription(),
+                e.getImageUrl(), e.getPrice(), e.getCategory(),
+                0.0, 0
+        );
     }
 }

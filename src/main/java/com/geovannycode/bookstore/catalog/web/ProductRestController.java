@@ -1,9 +1,10 @@
 package com.geovannycode.bookstore.catalog.web;
 
-import com.geovannycode.bookstore.catalog.command.ProductEntity;
-import com.geovannycode.bookstore.catalog.command.CreateProductRequest;
+import com.geovannycode.bookstore.catalog.CatalogApi;
+import com.geovannycode.bookstore.catalog.Product;
+import com.geovannycode.bookstore.catalog.command.CreateProductCommand;
+import com.geovannycode.bookstore.catalog.command.UpdateProductCommand;
 import com.geovannycode.bookstore.common.models.PagedResult;
-import com.geovannycode.bookstore.catalog.command.ProductCommandService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,40 +16,46 @@ import java.util.List;
 @RequestMapping("/api/catalog/products")
 public class ProductRestController {
 
-    private final ProductCommandService productCommandService;
+    private final CatalogApi catalogApi;
 
-    public ProductRestController(ProductCommandService productCommandService) {
-        this.productCommandService = productCommandService;
+    ProductRestController(CatalogApi catalogApi) {
+        this.catalogApi = catalogApi;
     }
 
     @GetMapping
-    PagedResult<ProductEntity> getAll(
+    PagedResult<Product> getAll(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return productCommandService.getAll(page, size);
+        return catalogApi.getAll(page, size);
     }
 
     @GetMapping("/{code}")
-    ResponseEntity<ProductEntity> getByCode(@PathVariable String code) {
-        return productCommandService.getByCode(code)
+    ResponseEntity<Product> getByCode(@PathVariable String code) {
+        return catalogApi.getByCode(code)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/category/{category}")
-    List<ProductEntity> getByCategory(@PathVariable String category) {
-        return productCommandService.getByCategory(category);
+    List<Product> getByCategory(@PathVariable String category) {
+        return catalogApi.getByCategory(category);
+    }
+
+    @GetMapping("/top-rated")
+    List<Product> getTopRated(
+            @RequestParam(defaultValue = "4.0") double minRating) {
+        return catalogApi.getTopRated(minRating);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ProductEntity create(@Valid @RequestBody CreateProductRequest request) {
-        return productCommandService.create(request);
+    Product create(@Valid @RequestBody CreateProductCommand command) {
+        return catalogApi.create(command);
     }
 
     @PutMapping("/{code}")
-    ProductEntity update(@PathVariable String code,
-                         @Valid @RequestBody CreateProductRequest request) {
-        return productCommandService.update(code, request);
+    Product update(@PathVariable String code,
+                   @Valid @RequestBody UpdateProductCommand command) {
+        return catalogApi.update(code, command);
     }
 }

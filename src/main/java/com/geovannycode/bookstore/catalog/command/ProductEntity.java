@@ -5,22 +5,25 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 /**
- * Entidad del catálogo de productos.
+ * Modelo de escritura (Command side) del patrón CQRS.
  *
- * ⚠️ PROBLEMA (para el workshop): esta entidad es PUBLIC y accesible
- * desde cualquier parte del código. OrderService la usa directamente
- * a través de ProductRepository, creando acoplamiento invisible.
+ * Optimizado para consistencia: normalizado, con constraints, sin campos calculados.
+ * Solo ProductCommandService lo usa — es package-private intencionalmente.
  *
- * Objetivo del workshop: encapsularla dentro de un módulo catalog
- * donde solo sea accesible internamente.
+ * La clase es package-private porque NADIE fuera de catalog.command
+ * debería instanciar o inyectar esta entidad directamente.
  */
 @Entity
-@Table(name = "products")
-public class ProductEntity {
+@Table(name = "products", schema = "catalog")
+class ProductEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_seq")
-    @SequenceGenerator(name = "product_seq", sequenceName = "product_id_seq", allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "catalog_product_seq")
+    @SequenceGenerator(
+            name = "catalog_product_seq",
+            sequenceName = "catalog.product_id_seq",
+            allocationSize = 50
+    )
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -55,10 +58,12 @@ public class ProductEntity {
         this.updatedAt = Instant.now();
     }
 
+    // Constructor protegido para JPA
     protected ProductEntity() {}
 
-    public ProductEntity(String code, String name, String description,
-                         String imageUrl, BigDecimal price, String category) {
+    // Constructor de dominio — package-private
+    ProductEntity(String code, String name, String description,
+                  String imageUrl, BigDecimal price, String category) {
         this.code = code;
         this.name = name;
         this.description = description;
@@ -67,18 +72,18 @@ public class ProductEntity {
         this.category = category;
     }
 
-    public Long getId() { return id; }
-    public String getCode() { return code; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public String getImageUrl() { return imageUrl; }
-    public BigDecimal getPrice() { return price; }
-    public String getCategory() { return category; }
-    public Instant getCreatedAt() { return createdAt; }
+    // Getters y setters package-private
+    Long getId() { return id; }
+    String getCode() { return code; }
+    String getName() { return name; }
+    String getDescription() { return description; }
+    String getImageUrl() { return imageUrl; }
+    BigDecimal getPrice() { return price; }
+    String getCategory() { return category; }
 
-    public void setName(String name) { this.name = name; }
-    public void setDescription(String description) { this.description = description; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-    public void setPrice(BigDecimal price) { this.price = price; }
-    public void setCategory(String category) { this.category = category; }
+    void setName(String name) { this.name = name; }
+    void setDescription(String description) { this.description = description; }
+    void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    void setPrice(BigDecimal price) { this.price = price; }
+    void setCategory(String category) { this.category = category; }
 }
