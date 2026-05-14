@@ -4,6 +4,7 @@ import com.geovannycode.bookstore.orders.OrderCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
+import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
 /**
@@ -38,12 +39,10 @@ public class OrderEventsInventoryHandler {
         this.inventoryService = inventoryService;
     }
 
-    @EventListener  // ⚠️ mismo thread, misma transacción — sin garantías
+    @ApplicationModuleListener
     public void on(OrderCreatedEvent event) {
-        log.info("Evento recibido (pero OrderService ya descontó el stock directamente): {}",
-                event.orderNumber());
-        // En el código acoplado, este método es letra muerta porque
-        // OrderService ya hizo el descuento antes de publicar el evento.
-        // Esta es la inconsistencia que queremos hacer visible.
+        log.info("Actualizando stock → order={}, product={}, qty={}",
+                event.orderNumber(), event.productCode(), event.quantity());
+        inventoryService.decreaseStock(event.productCode(), event.quantity());
     }
 }

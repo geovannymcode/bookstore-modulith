@@ -87,6 +87,17 @@
             <artifactId>spring-modulith-starter-core</artifactId>
         </dependency>
 
+        <!-- Event Publication Registry: persistencia del Outbox Pattern -->
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-starter-jdbc</artifactId>
+        </dependency>
+
+        <!-- Externalización de eventos a RabbitMQ con Spring Modulith -->
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-events-amqp</artifactId>
+        </dependency>
 
         <!-- ── Test ───────────────────────────────────────────── -->
         <dependency>
