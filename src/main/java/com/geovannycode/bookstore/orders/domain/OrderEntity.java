@@ -1,8 +1,9 @@
 package com.geovannycode.bookstore.orders.domain;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -28,17 +29,14 @@ public class OrderEntity {
     @Column(nullable = false)
     private String deliveryAddress;
 
-    @Column(nullable = false)
-    private String productCode;
-
-    @Column(nullable = false)
-    private String productName;
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal productPrice;
-
-    @Column(nullable = false)
-    private int quantity;
+    /**
+     * Una orden tiene múltiples ítems. Cascade ALL para que al persistir
+     * la orden se persistan automáticamente los ítems.
+     * orphanRemoval para que si se quita un ítem de la lista, se borre de BD.
+     */
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "order_id", nullable = false)
+    private List<OrderItemEntity> items = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -64,17 +62,13 @@ public class OrderEntity {
 
     public OrderEntity(String orderNumber, String customerName, String customerEmail,
                        String customerPhone, String deliveryAddress,
-                       String productCode, String productName,
-                       BigDecimal productPrice, int quantity) {
+                       List<OrderItemEntity> items) {
         this.orderNumber = orderNumber;
         this.customerName = customerName;
         this.customerEmail = customerEmail;
         this.customerPhone = customerPhone;
         this.deliveryAddress = deliveryAddress;
-        this.productCode = productCode;
-        this.productName = productName;
-        this.productPrice = productPrice;
-        this.quantity = quantity;
+        this.items.addAll(items);
         this.status = OrderStatus.NEW;
     }
 
@@ -84,10 +78,7 @@ public class OrderEntity {
     public String getCustomerEmail() { return customerEmail; }
     public String getCustomerPhone() { return customerPhone; }
     public String getDeliveryAddress() { return deliveryAddress; }
-    public String getProductCode() { return productCode; }
-    public String getProductName() { return productName; }
-    public BigDecimal getProductPrice() { return productPrice; }
-    public int getQuantity() { return quantity; }
+    public List<OrderItemEntity> getItems() { return List.copyOf(items); }
     public OrderStatus getStatus() { return status; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
