@@ -1,22 +1,16 @@
 package com.geovannycode.bookstore.orders.domain;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import java.util.List;
 
 /**
- * Request para crear una orden.
+ * Request para crear una orden con múltiples ítems.
  *
- * ⚠️ PROBLEMA: este modelo vive en models/ junto a CreateProductRequest,
- * PagedResult, OrderStatus y Customer — tipos de dominios completamente
- * distintos mezclados en el mismo paquete.
+ * Cada ítem referencia un producto del catálogo por su código
+ * y la cantidad deseada. Los datos del cliente van en el nivel raíz.
  */
 public record CreateOrderRequest(
-        @NotBlank(message = "El código del producto es obligatorio")
-        String productCode,
-
-        @Min(value = 1, message = "La cantidad mínima es 1")
-        @Max(value = 100, message = "La cantidad máxima por orden es 100")
-        int quantity,
-
         @NotBlank(message = "El nombre del cliente es obligatorio")
         String customerName,
 
@@ -28,5 +22,21 @@ public record CreateOrderRequest(
         String customerPhone,
 
         @NotBlank(message = "La dirección de entrega es obligatoria")
-        String deliveryAddress
-) {}
+        String deliveryAddress,
+
+        @NotEmpty(message = "La orden debe tener al menos un ítem")
+        @Valid
+        List<Item> items
+) {
+    /**
+     * Representa un ítem del request: qué producto y cuántas unidades.
+     */
+    public record Item(
+            @NotBlank(message = "El código del producto es obligatorio")
+            String productCode,
+
+            @Min(value = 1, message = "La cantidad mínima es 1")
+            @Max(value = 100, message = "La cantidad máxima por ítem es 100")
+            int quantity
+    ) {}
+}

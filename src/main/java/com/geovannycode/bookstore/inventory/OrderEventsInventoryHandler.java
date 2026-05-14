@@ -3,30 +3,22 @@ package com.geovannycode.bookstore.inventory;
 import com.geovannycode.bookstore.orders.OrderCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.EventListener;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
 /**
- * Handler que recibe el evento de orden creada.
+ * Handler que recibe el evento de orden creada y descuenta stock.
  *
- * ⚠️ PROBLEMAS (para el workshop):
+ * Usa @ApplicationModuleListener (= @Async + @TransactionalEventListener
+ * + @Transactional(REQUIRES_NEW)) para que:
+ * 1. Se ejecute DESPUÉS del commit de la orden (post-commit)
+ * 2. Corra en un hilo separado (async)
+ * 3. Tenga su propia transacción independiente
  *
- * 1. USA @EventListener: el handler se ejecuta DENTRO de la misma
- *    transacción que creó la orden. Si falla, hace rollback de la
- *    orden completa — comportamiento que puede no ser el deseado.
+ * Si falla, el Event Publication Registry reintentará automáticamente.
  *
- * 2. SIN GARANTÍA DE ENTREGA: si la aplicación se reinicia después
- *    del commit pero antes de que este handler ejecute en un escenario
- *    async, el evento se pierde sin dejar rastro.
- *
- * 3. REDUNDANTE: OrderService ya descontó el stock directamente
- *    a través de InventoryRepository. Este handler nunca recibe
- *    el control porque el @EventListener es síncrono y OrderService
- *    ya hizo el trabajo antes.
- *
- * Objetivo: usar @ApplicationModuleListener con Event Publication Registry
- * para garantizar entrega y separar las transacciones correctamente.
+ * Ahora itera sobre cada ítem de la orden para descontar stock
+ * de múltiples productos.
  */
 @Component
 public class OrderEventsInventoryHandler {
@@ -41,8 +33,10 @@ public class OrderEventsInventoryHandler {
 
     @ApplicationModuleListener
     public void on(OrderCreatedEvent event) {
-        log.info("Actualizando stock → order={}, product={}, qty={}",
-                event.orderNumber(), event.productCode(), event.quantity());
-        inventoryService.decreaseStock(event.productCode(), event.quantity());
+        for (OrderCreatedEvent.Item item : event.items()) {
+            log.info("Actualizando stock → order={}, product={}, qty={}",
+                    event.orderNumber(), item.productCode(), item.quantity());
+            inventoryService.decreaseStock(item.productCode(), item.quantity());
+        }
     }
 }
