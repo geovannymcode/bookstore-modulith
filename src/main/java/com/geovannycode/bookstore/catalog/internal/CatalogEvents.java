@@ -19,24 +19,14 @@ public sealed interface CatalogEvents {
      * El Query side crea el ProductView correspondiente.
      */
     record ProductCreated(
-            String code,
-            String name,
-            String description,
-            String imageUrl,
-            BigDecimal price,
-            String category
-    ) implements CatalogEvents {}
+            String code, String name, String description, String imageUrl, BigDecimal price, String category)
+            implements CatalogEvents {}
 
     /**
      * Publicado por ProductCommandService cuando se actualiza un producto.
      * El Query side actualiza el ProductView.
      */
     record ProductUpdated(
-            String code,
-            String name,
-            String description,
-            String imageUrl,
-            BigDecimal price,
-            String category
-    ) implements CatalogEvents {}
+            String code, String name, String description, String imageUrl, BigDecimal price, String category)
+            implements CatalogEvents {}
 }

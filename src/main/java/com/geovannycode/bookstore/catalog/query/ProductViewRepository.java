@@ -1,11 +1,10 @@
 package com.geovannycode.bookstore.catalog.query;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Repositorio de lectura del módulo Catalog.
@@ -27,6 +26,5 @@ public interface ProductViewRepository extends JpaRepository<ProductView, String
      * Sin CQRS, esta consulta requeriría un AVG + GROUP BY en cada llamada.
      * Con el read model, es un simple WHERE + ORDER BY.
      */
-    List<ProductView> findByAverageRatingGreaterThanEqualOrderByAverageRatingDesc(
-            double minRating);
+    List<ProductView> findByAverageRatingGreaterThanEqualOrderByAverageRatingDesc(double minRating);
 }

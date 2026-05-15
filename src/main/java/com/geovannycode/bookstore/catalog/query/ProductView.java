@@ -45,8 +45,8 @@ public class ProductView {
 
     protected ProductView() {}
 
-    public ProductView(String code, String name, String description,
-                       String imageUrl, BigDecimal price, String category) {
+    public ProductView(
+            String code, String name, String description, String imageUrl, BigDecimal price, String category) {
         this.code = code;
         this.name = name;
         this.description = description;
@@ -70,8 +70,7 @@ public class ProductView {
         this.lastUpdatedAt = Instant.now();
     }
 
-    public void updateFrom(String name, String description,
-                           String imageUrl, BigDecimal price, String category) {
+    public void updateFrom(String name, String description, String imageUrl, BigDecimal price, String category) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
@@ -81,12 +80,35 @@ public class ProductView {
     }
 
     // Getters públicos (ProductQueryService los necesita)
-    public String getCode() { return code; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public String getImageUrl() { return imageUrl; }
-    public BigDecimal getPrice() { return price; }
-    public String getCategory() { return category; }
-    public double getAverageRating() { return averageRating; }
-    public int getReviewCount() { return reviewCount; }
+    public String getCode() {
+        return code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public int getReviewCount() {
+        return reviewCount;
+    }
 }

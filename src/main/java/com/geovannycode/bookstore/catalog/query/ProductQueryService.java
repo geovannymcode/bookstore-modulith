@@ -2,13 +2,12 @@ package com.geovannycode.bookstore.catalog.query;
 
 import com.geovannycode.bookstore.catalog.Product;
 import com.geovannycode.bookstore.common.models.PagedResult;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Servicio de lectura del módulo Catalog (Query side).
@@ -33,33 +32,31 @@ public class ProductQueryService {
     }
 
     public PagedResult<Product> findAll(int page, int size) {
-        var pageable = PageRequest.of(
-                Math.max(0, page - 1), size,
-                Sort.by("name")
-        );
+        var pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by("name"));
         return PagedResult.of(viewRepository.findAll(pageable).map(this::toProduct));
     }
 
     public List<Product> findByCategory(String category) {
-        return viewRepository.findByCategory(category)
-                .stream()
+        return viewRepository.findByCategory(category).stream()
                 .map(this::toProduct)
                 .toList();
     }
 
     public List<Product> findByMinRating(double minRating) {
-        return viewRepository
-                .findByAverageRatingGreaterThanEqualOrderByAverageRatingDesc(minRating)
-                .stream()
+        return viewRepository.findByAverageRatingGreaterThanEqualOrderByAverageRatingDesc(minRating).stream()
                 .map(this::toProduct)
                 .toList();
     }
 
     private Product toProduct(ProductView view) {
         return new Product(
-                view.getCode(), view.getName(), view.getDescription(),
-                view.getImageUrl(), view.getPrice(), view.getCategory(),
-                view.getAverageRating(), view.getReviewCount()
-        );
+                view.getCode(),
+                view.getName(),
+                view.getDescription(),
+                view.getImageUrl(),
+                view.getPrice(),
+                view.getCategory(),
+                view.getAverageRating(),
+                view.getReviewCount());
     }
 }

@@ -1,11 +1,10 @@
 package com.geovannycode.bookstore.catalog.command;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * ⚠️ PROBLEMA (para el workshop): este repositorio es PUBLIC y accesible

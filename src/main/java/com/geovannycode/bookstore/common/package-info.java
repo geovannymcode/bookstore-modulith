@@ -1,4 +1,3 @@
-
 /**
  * Módulo OPEN: todas sus clases son visibles para los demás módulos.
  *

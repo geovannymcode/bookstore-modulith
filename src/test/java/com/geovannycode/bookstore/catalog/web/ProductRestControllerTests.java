@@ -1,8 +1,15 @@
 package com.geovannycode.bookstore.catalog.web;
 
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geovannycode.bookstore.TestcontainersConfiguration;
 import com.geovannycode.bookstore.catalog.command.CreateProductCommand;
+import java.math.BigDecimal;
+import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,14 +23,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import javax.sql.DataSource;
-import java.math.BigDecimal;
-
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Test del módulo catalog en aislamiento total.
@@ -76,9 +75,7 @@ class ProductRestControllerTests {
 
     @Test
     void shouldReturnProductsPagedResult() throws Exception {
-        mockMvc.perform(get("/api/catalog/products")
-                        .param("page", "1")
-                        .param("size", "5"))
+        mockMvc.perform(get("/api/catalog/products").param("page", "1").param("size", "5"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(greaterThan(0))))
@@ -97,8 +94,7 @@ class ProductRestControllerTests {
 
     @Test
     void shouldReturn404WithProblemDetailForNonExistentProduct() throws Exception {
-        mockMvc.perform(get("/api/catalog/products/NONEXISTENT"))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/catalog/products/NONEXISTENT")).andExpect(status().isNotFound());
     }
 
     @Test
@@ -111,8 +107,7 @@ class ProductRestControllerTests {
 
     @Test
     void shouldReturnTopRatedProducts() throws Exception {
-        mockMvc.perform(get("/api/catalog/products/top-rated")
-                        .param("minRating", "4.7"))
+        mockMvc.perform(get("/api/catalog/products/top-rated").param("minRating", "4.7"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].averageRating", greaterThanOrEqualTo(4.7)));
     }
@@ -120,9 +115,7 @@ class ProductRestControllerTests {
     @Test
     void shouldCreateProductSuccessfully() throws Exception {
         var command = new CreateProductCommand(
-                "P999", "Test Book", "Un libro de prueba",
-                null, new BigDecimal("29.99"), "Testing"
-        );
+                "P999", "Test Book", "Un libro de prueba", null, new BigDecimal("29.99"), "Testing");
 
         mockMvc.perform(post("/api/catalog/products")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -135,9 +128,7 @@ class ProductRestControllerTests {
     @Test
     void shouldReturn409WhenCreatingDuplicateProduct() throws Exception {
         var command = new CreateProductCommand(
-                "P001", "Duplicado", "Ya existe P001",
-                null, new BigDecimal("10.00"), "Testing"
-        );
+                "P001", "Duplicado", "Ya existe P001", null, new BigDecimal("10.00"), "Testing");
 
         mockMvc.perform(post("/api/catalog/products")
                         .contentType(MediaType.APPLICATION_JSON)

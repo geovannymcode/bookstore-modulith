@@ -19,11 +19,7 @@ class ProductEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "catalog_product_seq")
-    @SequenceGenerator(
-            name = "catalog_product_seq",
-            sequenceName = "catalog.product_id_seq",
-            allocationSize = 50
-    )
+    @SequenceGenerator(name = "catalog_product_seq", sequenceName = "catalog.product_id_seq", allocationSize = 50)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -62,8 +58,7 @@ class ProductEntity {
     protected ProductEntity() {}
 
     // Constructor de dominio — package-private
-    ProductEntity(String code, String name, String description,
-                  String imageUrl, BigDecimal price, String category) {
+    ProductEntity(String code, String name, String description, String imageUrl, BigDecimal price, String category) {
         this.code = code;
         this.name = name;
         this.description = description;
@@ -73,17 +68,51 @@ class ProductEntity {
     }
 
     // Getters y setters package-private
-    Long getId() { return id; }
-    String getCode() { return code; }
-    String getName() { return name; }
-    String getDescription() { return description; }
-    String getImageUrl() { return imageUrl; }
-    BigDecimal getPrice() { return price; }
-    String getCategory() { return category; }
+    Long getId() {
+        return id;
+    }
 
-    void setName(String name) { this.name = name; }
-    void setDescription(String description) { this.description = description; }
-    void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-    void setPrice(BigDecimal price) { this.price = price; }
-    void setCategory(String category) { this.category = category; }
+    String getCode() {
+        return code;
+    }
+
+    String getName() {
+        return name;
+    }
+
+    String getDescription() {
+        return description;
+    }
+
+    String getImageUrl() {
+        return imageUrl;
+    }
+
+    BigDecimal getPrice() {
+        return price;
+    }
+
+    String getCategory() {
+        return category;
+    }
+
+    void setName(String name) {
+        this.name = name;
+    }
+
+    void setDescription(String description) {
+        this.description = description;
+    }
+
+    void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    void setCategory(String category) {
+        this.category = category;
+    }
 }

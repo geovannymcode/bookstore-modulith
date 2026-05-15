@@ -60,9 +60,13 @@ public class OrderEntity {
 
     protected OrderEntity() {}
 
-    public OrderEntity(String orderNumber, String customerName, String customerEmail,
-                       String customerPhone, String deliveryAddress,
-                       List<OrderItemEntity> items) {
+    public OrderEntity(
+            String orderNumber,
+            String customerName,
+            String customerEmail,
+            String customerPhone,
+            String deliveryAddress,
+            List<OrderItemEntity> items) {
         this.orderNumber = orderNumber;
         this.customerName = customerName;
         this.customerEmail = customerEmail;
@@ -72,16 +76,47 @@ public class OrderEntity {
         this.status = OrderStatus.NEW;
     }
 
-    public Long getId() { return id; }
-    public String getOrderNumber() { return orderNumber; }
-    public String getCustomerName() { return customerName; }
-    public String getCustomerEmail() { return customerEmail; }
-    public String getCustomerPhone() { return customerPhone; }
-    public String getDeliveryAddress() { return deliveryAddress; }
-    public List<OrderItemEntity> getItems() { return List.copyOf(items); }
-    public OrderStatus getStatus() { return status; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
+    public Long getId() {
+        return id;
+    }
 
-    public void setStatus(OrderStatus status) { this.status = status; }
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public List<OrderItemEntity> getItems() {
+        return List.copyOf(items);
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
 }

@@ -1,7 +1,7 @@
 package com.geovannycode.bookstore.common.models;
 
-import org.springframework.data.domain.Page;
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 public record PagedResult<T>(
         List<T> data,
@@ -11,8 +11,7 @@ public record PagedResult<T>(
         boolean isFirst,
         boolean isLast,
         boolean hasNext,
-        boolean hasPrevious
-) {
+        boolean hasPrevious) {
     public static <T> PagedResult<T> of(Page<T> page) {
         return new PagedResult<>(
                 page.getContent(),
@@ -22,7 +21,6 @@ public record PagedResult<T>(
                 page.isFirst(),
                 page.isLast(),
                 page.hasNext(),
-                page.hasPrevious()
-        );
+                page.hasPrevious());
     }
 }

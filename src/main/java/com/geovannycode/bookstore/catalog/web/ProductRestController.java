@@ -6,11 +6,10 @@ import com.geovannycode.bookstore.catalog.command.CreateProductCommand;
 import com.geovannycode.bookstore.catalog.command.UpdateProductCommand;
 import com.geovannycode.bookstore.common.models.PagedResult;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/catalog/products")
@@ -24,14 +23,14 @@ public class ProductRestController {
 
     @GetMapping
     PagedResult<Product> getAll(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
         return catalogApi.getAll(page, size);
     }
 
     @GetMapping("/{code}")
     ResponseEntity<Product> getByCode(@PathVariable String code) {
-        return catalogApi.getByCode(code)
+        return catalogApi
+                .getByCode(code)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -42,8 +41,7 @@ public class ProductRestController {
     }
 
     @GetMapping("/top-rated")
-    List<Product> getTopRated(
-            @RequestParam(defaultValue = "4.0") double minRating) {
+    List<Product> getTopRated(@RequestParam(defaultValue = "4.0") double minRating) {
         return catalogApi.getTopRated(minRating);
     }
 
@@ -54,8 +52,7 @@ public class ProductRestController {
     }
 
     @PutMapping("/{code}")
-    Product update(@PathVariable String code,
-                   @Valid @RequestBody UpdateProductCommand command) {
+    Product update(@PathVariable String code, @Valid @RequestBody UpdateProductCommand command) {
         return catalogApi.update(code, command);
     }
 }

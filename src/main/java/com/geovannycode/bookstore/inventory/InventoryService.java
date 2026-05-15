@@ -29,19 +29,18 @@ public class InventoryService {
     }
 
     public void decreaseStock(String productCode, int quantity) {
-        var stock = inventoryRepository.findByProductCode(productCode)
-                .orElseThrow(() -> new IllegalStateException(
-                        "Sin stock para: " + productCode));
+        var stock = inventoryRepository
+                .findByProductCode(productCode)
+                .orElseThrow(() -> new IllegalStateException("Sin stock para: " + productCode));
 
         stock.decreaseStock(quantity);
         inventoryRepository.save(stock);
-        log.info("Stock disminuido: product={}, qty={}, remaining={}",
-                productCode, quantity, stock.getStockLevel());
+        log.info("Stock disminuido: product={}, qty={}, remaining={}", productCode, quantity, stock.getStockLevel());
     }
 
     public void increaseStock(String productCode, int quantity) {
-        var stock = inventoryRepository.findByProductCode(productCode)
-                .orElseGet(() -> new InventoryEntity(productCode, 0));
+        var stock =
+                inventoryRepository.findByProductCode(productCode).orElseGet(() -> new InventoryEntity(productCode, 0));
 
         stock.increaseStock(quantity);
         inventoryRepository.save(stock);
@@ -49,7 +48,8 @@ public class InventoryService {
 
     @Transactional(readOnly = true)
     public int getStockLevel(String productCode) {
-        return inventoryRepository.findByProductCode(productCode)
+        return inventoryRepository
+                .findByProductCode(productCode)
                 .map(InventoryEntity::getStockLevel)
                 .orElse(0);
     }
