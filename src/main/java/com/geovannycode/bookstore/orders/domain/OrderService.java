@@ -36,7 +36,8 @@ public class OrderService {
 
         for (CreateOrderRequest.Item item : request.items()) {
             Product product = catalogApi.getByCode(item.productCode())
-                    .orElseThrow(() -> new OrderNotFoundException(item.productCode()));
+                    .orElseThrow(() -> new InvalidOrderException(
+                            "Producto no encontrado: " + item.productCode()));
 
             orderItems.add(new OrderItemEntity(
                     product.code(), product.name(), product.price(), item.quantity()
