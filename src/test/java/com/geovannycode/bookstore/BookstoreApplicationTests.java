@@ -5,15 +5,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 /**
- * Smoke test: verifica que el contexto carga correctamente.
+ * Smoke test: verifica que el contexto completo carga sin errores.
  *
- * Este es el único test que viene con el starter. Durante el workshop
- * vas a agregar:
+ * Si este test pasa, significa que:
+ *   ✅ Flyway ejecutó todas las migraciones V1-V6 sin errores
+ *   ✅ JPA validó el mapeo de entidades contra el schema real
+ *   ✅ Spring Modulith inicializó el Event Publication Registry
+ *   ✅ La conexión a Postgres y RabbitMQ está establecida
+ *   ✅ Todos los beans se inyectan correctamente
  *
- * TODO Parte 1: ModularityTest (verificación arquitectural)
- * TODO Parte 5: @ApplicationModuleTest para catalog, orders e inventory
- * TODO Parte 5: AssertablePublishedEvents en el test de orders
- * TODO Parte 5: Scenario en el test de inventory
+ * Lo ejecutamos como parte del build (./mvnw verify) para detectar
+ * problemas de configuración antes de desplegar.
  */
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
