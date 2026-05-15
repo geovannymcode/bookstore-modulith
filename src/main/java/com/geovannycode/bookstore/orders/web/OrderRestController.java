@@ -1,7 +1,5 @@
 package com.geovannycode.bookstore.orders.web;
 
-
-import com.geovannycode.bookstore.common.models.PagedResult;
 import com.geovannycode.bookstore.orders.domain.CreateOrderRequest;
 import com.geovannycode.bookstore.orders.domain.CreateOrderResponse;
 import com.geovannycode.bookstore.orders.domain.OrderEntity;
@@ -30,5 +28,4 @@ public class OrderRestController {
     OrderEntity getByOrderNumber(@PathVariable String orderNumber) {
         return orderService.getByOrderNumber(orderNumber);
     }
-
 }

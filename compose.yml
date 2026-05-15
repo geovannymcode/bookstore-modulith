@@ -26,3 +26,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  zipkin:
+    image: openzipkin/zipkin:3
+    ports:
+      - "9411:9411"

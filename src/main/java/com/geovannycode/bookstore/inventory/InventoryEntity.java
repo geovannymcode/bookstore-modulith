@@ -24,9 +24,17 @@ public class InventoryEntity {
         this.stockLevel = stockLevel;
     }
 
-    public Long getId() { return id; }
-    public String getProductCode() { return productCode; }
-    public int getStockLevel() { return stockLevel; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public int getStockLevel() {
+        return stockLevel;
+    }
 
     /**
      * ⚠️ PROBLEMA (para el workshop): este método modifica el estado
@@ -35,10 +43,8 @@ public class InventoryEntity {
      */
     public void decreaseStock(int quantity) {
         if (this.stockLevel < quantity) {
-            throw new IllegalStateException(
-                    "Stock insuficiente para " + productCode +
-                    ": disponible=" + stockLevel + ", solicitado=" + quantity
-            );
+            throw new IllegalStateException("Stock insuficiente para " + productCode + ": disponible=" + stockLevel
+                    + ", solicitado=" + quantity);
         }
         this.stockLevel -= quantity;
     }

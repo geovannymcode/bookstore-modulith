@@ -34,8 +34,11 @@ public class OrderEventsInventoryHandler {
     @ApplicationModuleListener
     public void on(OrderCreatedEvent event) {
         for (OrderCreatedEvent.Item item : event.items()) {
-            log.info("Actualizando stock → order={}, product={}, qty={}",
-                    event.orderNumber(), item.productCode(), item.quantity());
+            log.info(
+                    "Actualizando stock → order={}, product={}, qty={}",
+                    event.orderNumber(),
+                    item.productCode(),
+                    item.quantity());
             inventoryService.decreaseStock(item.productCode(), item.quantity());
         }
     }

@@ -43,9 +43,7 @@ class CatalogEventHandler {
         log.info("CQRS sync → creando ProductView: code={}", event.code());
 
         var view = new ProductView(
-                event.code(), event.name(), event.description(),
-                event.imageUrl(), event.price(), event.category()
-        );
+                event.code(), event.name(), event.description(), event.imageUrl(), event.price(), event.category());
         viewRepository.save(view);
     }
 
@@ -56,8 +54,7 @@ class CatalogEventHandler {
         log.info("CQRS sync → actualizando ProductView: code={}", event.code());
 
         viewRepository.findByCode(event.code()).ifPresent(view -> {
-            view.updateFrom(event.name(), event.description(),
-                    event.imageUrl(), event.price(), event.category());
+            view.updateFrom(event.name(), event.description(), event.imageUrl(), event.price(), event.category());
             viewRepository.save(view);
         });
     }

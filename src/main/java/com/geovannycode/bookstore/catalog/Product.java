@@ -20,5 +20,4 @@ public record Product(
         BigDecimal price,
         String category,
         double averageRating,
-        int reviewCount
-) {}
+        int reviewCount) {}

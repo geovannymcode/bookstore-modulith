@@ -1,5 +1,9 @@
 package com.geovannycode.bookstore.orders.domain;
 
 public enum OrderStatus {
-    NEW, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+    NEW,
+    CONFIRMED,
+    SHIPPED,
+    DELIVERED,
+    CANCELLED
 }

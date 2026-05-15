@@ -1,9 +1,19 @@
 package com.geovannycode.bookstore.orders.web;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.startsWith;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.geovannycode.bookstore.TestcontainersConfiguration;
 import com.geovannycode.bookstore.catalog.CatalogApi;
 import com.geovannycode.bookstore.catalog.Product;
 import com.geovannycode.bookstore.orders.OrderCreatedEvent;
+import java.math.BigDecimal;
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,17 +28,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import javax.sql.DataSource;
-import java.math.BigDecimal;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Test del módulo orders en aislamiento.
@@ -69,10 +68,14 @@ class OrderRestControllerTests {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 
         var product = new Product(
-                "P001", "Clean Code", "Un manual de calidad",
-                null, new BigDecimal("45.99"), "Ingeniería de Software",
-                4.8, 235
-        );
+                "P001",
+                "Clean Code",
+                "Un manual de calidad",
+                null,
+                new BigDecimal("45.99"),
+                "Ingeniería de Software",
+                4.8,
+                235);
         given(catalogApi.getByCode("P001")).willReturn(Optional.of(product));
         given(catalogApi.getByCode("INEXISTENTE")).willReturn(Optional.empty());
     }
@@ -101,14 +104,13 @@ class OrderRestControllerTests {
         var orderEvents = events.ofType(OrderCreatedEvent.class);
 
         assertThat(orderEvents).isNotEmpty();
-        assertThat(orderEvents)
-                .anySatisfy(event -> {
-                    assertThat(event.orderNumber()).startsWith("ORD-");
-                    assertThat(event.customer().email()).isEqualTo("geo@barranquillajug.com");
-                    assertThat(event.items()).hasSize(1);
-                    assertThat(event.items().get(0).productCode()).isEqualTo("P001");
-                    assertThat(event.items().get(0).quantity()).isEqualTo(2);
-                });
+        assertThat(orderEvents).anySatisfy(event -> {
+            assertThat(event.orderNumber()).startsWith("ORD-");
+            assertThat(event.customer().email()).isEqualTo("geo@barranquillajug.com");
+            assertThat(event.items()).hasSize(1);
+            assertThat(event.items().get(0).productCode()).isEqualTo("P001");
+            assertThat(event.items().get(0).quantity()).isEqualTo(2);
+        });
     }
 
     @Test
@@ -133,8 +135,7 @@ class OrderRestControllerTests {
 
     @Test
     void shouldReturn404ForNonExistentOrder() throws Exception {
-        mockMvc.perform(get("/api/orders/ORD-NOTFOUND"))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/orders/ORD-NOTFOUND")).andExpect(status().isNotFound());
     }
 
     @Test

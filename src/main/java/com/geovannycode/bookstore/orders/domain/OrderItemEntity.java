@@ -32,17 +32,30 @@ public class OrderItemEntity {
 
     protected OrderItemEntity() {}
 
-    public OrderItemEntity(String productCode, String productName,
-                           BigDecimal productPrice, int quantity) {
+    public OrderItemEntity(String productCode, String productName, BigDecimal productPrice, int quantity) {
         this.productCode = productCode;
         this.productName = productName;
         this.productPrice = productPrice;
         this.quantity = quantity;
     }
 
-    public Long getId() { return id; }
-    public String getProductCode() { return productCode; }
-    public String getProductName() { return productName; }
-    public BigDecimal getProductPrice() { return productPrice; }
-    public int getQuantity() { return quantity; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public BigDecimal getProductPrice() {
+        return productPrice;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
 }

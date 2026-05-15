@@ -5,10 +5,9 @@ import com.geovannycode.bookstore.catalog.command.ProductCommandService;
 import com.geovannycode.bookstore.catalog.command.UpdateProductCommand;
 import com.geovannycode.bookstore.catalog.query.ProductQueryService;
 import com.geovannycode.bookstore.common.models.PagedResult;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 /**
  * API pública del módulo Catalog.
@@ -24,8 +23,7 @@ public class CatalogApi {
     private final ProductCommandService commandService;
     private final ProductQueryService queryService;
 
-    public CatalogApi(ProductCommandService commandService,
-                      ProductQueryService queryService) {
+    public CatalogApi(ProductCommandService commandService, ProductQueryService queryService) {
         this.commandService = commandService;
         this.queryService = queryService;
     }

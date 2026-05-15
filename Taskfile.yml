@@ -1,0 +1,93 @@
+# Taskfile.yml
+version: '3'
+
+tasks:
+  default:
+    desc: "Ejecuta todos los tests"
+    cmds:
+      - mvn verify
+
+  dev:
+    desc: "Levanta Docker y arranca la aplicación"
+    cmds:
+      - docker compose up -d
+      - sleep 3
+      - mvn spring-boot:run
+
+  infra:up:
+    desc: "Levanta Postgres, RabbitMQ y Zipkin"
+    cmds:
+      - docker compose up -d
+
+  infra:down:
+    desc: "Baja la infraestructura"
+    cmds:
+      - docker compose down
+
+  infra:reset:
+    desc: "Baja la infraestructura y borra los volúmenes (reset completo)"
+    cmds:
+      - docker compose down -v
+
+  infra:logs:
+    desc: "Muestra logs de todos los contenedores"
+    cmds:
+      - docker compose logs -f
+
+  test:
+    desc: "Ejecuta todos los tests"
+    cmds:
+      - mvn test
+
+  test:modulith:
+    desc: "Verifica la arquitectura modular (ModularityTest)"
+    cmds:
+      - mvn test -Dtest=ModularityTest
+
+  test:catalog:
+    desc: "Tests del módulo catalog en aislamiento"
+    cmds:
+      - mvn test -Dtest=ProductRestControllerTests
+
+  test:orders:
+    desc: "Tests del módulo orders en aislamiento"
+    cmds:
+      - mvn test -Dtest=OrderRestControllerTests
+
+  test:inventory:
+    desc: "Tests del módulo inventory en aislamiento"
+    cmds:
+      - mvn test -Dtest=InventoryIntegrationTests
+
+  docs:
+    desc: "Genera documentación C4 en target/spring-modulith-docs/"
+    cmds:
+      - mvn test -Dtest=ModularityTest
+      - echo "Documentación generada en target/spring-modulith-docs/"
+
+  build:
+    desc: "Compila y empaqueta el JAR (sin tests)"
+    cmds:
+      - mvn package -DskipTests
+
+  clean:
+    desc: "Limpia el directorio target"
+    cmds:
+      - mvn clean
+
+  format:
+    desc: "Formatea el código con Spotless"
+    cmds:
+      - mvn spotless:apply
+
+  format:check:
+    desc: "Verifica el formato del código sin modificarlo"
+    cmds:
+      - mvn spotless:check
+
+  demo:
+    desc: "Levanta todo el entorno para demostración"
+    deps: [ infra:up ]
+    cmds:
+      - sleep 5
+      - mvn spring-boot:run

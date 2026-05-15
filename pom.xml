@@ -26,6 +26,8 @@
         <java.version>25</java.version>
         <spring-modulith.version>2.0.6</spring-modulith.version>
         <testcontainers.version>1.20.5</testcontainers.version>
+        <spotless.version>3.2.0</spotless.version>
+        <palantir-java-format.version>2.85.0</palantir-java-format.version>
     </properties>
 
     <dependencies>
@@ -99,6 +101,22 @@
             <artifactId>spring-modulith-events-amqp</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-actuator</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- pom.xml — ya incluido en el proyecto -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bridge-brave</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-reporter-brave</artifactId>
+        </dependency>
+
         <!-- ── Test ───────────────────────────────────────────── -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -158,6 +176,30 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <importOrder />
+                        <removeUnusedImports />
+                        <palantirJavaFormat>
+                            <version>${palantir-java-format.version}</version>
+                        </palantirJavaFormat>
+                        <formatAnnotations />
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+
     </build>
 </project>

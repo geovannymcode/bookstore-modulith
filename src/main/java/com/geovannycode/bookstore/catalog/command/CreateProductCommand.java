@@ -3,7 +3,6 @@ package com.geovannycode.bookstore.catalog.command;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
 import java.math.BigDecimal;
 
 /**
@@ -19,19 +18,13 @@ import java.math.BigDecimal;
  * cruzar la frontera del módulo, pero estos commands son parte del API de catalog.
  */
 public record CreateProductCommand(
-        @NotBlank(message = "El código del producto es obligatorio")
-        String code,
+        @NotBlank(message = "El código del producto es obligatorio") String code,
 
-        @NotBlank(message = "El nombre es obligatorio")
-        String name,
+        @NotBlank(message = "El nombre es obligatorio") String name,
 
         String description,
         String imageUrl,
 
-        @NotNull(message = "El precio es obligatorio")
-        @DecimalMin(value = "0.01", message = "El precio debe ser mayor a cero")
-        BigDecimal price,
+        @NotNull(message = "El precio es obligatorio") @DecimalMin(value = "0.01", message = "El precio debe ser mayor a cero") BigDecimal price,
 
-        @NotBlank(message = "La categoría es obligatoria")
-        String category
-) {}
+        @NotBlank(message = "La categoría es obligatoria") String category) {}
